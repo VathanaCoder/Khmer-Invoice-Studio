@@ -68,6 +68,9 @@ button{cursor:pointer;border:0;background:none;white-space:nowrap}
 .g input{width:100%;height:100%;border:0;background:transparent;padding:0 2px;border-radius:0;font-size:.875rem}
 .g input.nu{text-align:right}
 .g input:focus{outline:0}
+.g>input{border:0;border-left:1px solid var(--pl);border-top:1px solid var(--pl);border-radius:0;scroll-margin-top:96px;scroll-margin-bottom:140px}
+.g>.n{border-left:0}
+.g>input:first-child{border-left:0}
 .g>*:focus-within:not(.n){background:color-mix(in srgb,var(--color-accent) 8%,var(--color-surface))}
 .am{justify-content:flex-end;font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden}
 .sum{display:flex;justify-content:flex-end;margin-top:14px;position:relative}
@@ -84,6 +87,7 @@ button{cursor:pointer;border:0;background:none;white-space:nowrap}
   animation:up .2s ease}
 .sheet.c{border-radius:var(--r-lg);margin:auto 14px;width:calc(100% - 28px)}
 .scrim:has(.c){align-items:center}
+.scrim.noanim .sheet{animation:none}
 @keyframes up{from{transform:translateY(24px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.sheet{animation:none}.bar{transition:none}}
 .sheet h3{font-size:1.25rem;margin-bottom:14px}
@@ -96,8 +100,8 @@ input.fld{display:block}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--color-bg);border-radius:var(--r-md);padding:4px;gap:4px}
 .seg button{min-height:42px;border-radius:10px;font-weight:500;color:var(--color-mute)}
 .seg button.on{background:var(--color-surface);color:var(--color-ink);font-weight:700;box-shadow:0 1px 3px var(--color-line)}
-.sws{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.sw{width:40px;height:40px;border-radius:50%;background:var(--c);border:3px solid var(--color-surface);box-shadow:0 0 0 1px var(--color-line)}
+.sws{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sw{width:38px;height:38px;border-radius:50%;background:var(--c);border:3px solid var(--color-surface);box-shadow:0 0 0 1px var(--color-line)}
 .sw.on{box-shadow:0 0 0 2.5px var(--color-ink)}
 .sw.cu{background:conic-gradient(var(--sw-3),var(--sw-4),var(--sw-2),var(--sw-1),var(--sw-5),var(--sw-3));position:relative;overflow:hidden}
 .sw.cu input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
@@ -111,3 +115,4 @@ input.fld{display:block}
 .dp button{display:block;width:100%;min-height:44px;border-radius:10px;scroll-snap-align:center;color:var(--color-mute)}
 .dp button.on{background:var(--color-accent);color:var(--color-accent-ink);font-weight:700}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--color-ink);color:var(--color-surface);padding:10px 18px;border-radius:99px;z-index:60;font-size:.9375rem;max-width:90vw}
+     
