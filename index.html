@@ -1,1 +1,41 @@
-<!doctype html><html lang="km"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#081226"><title>Khmer Invoice Studio</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body><div class="glow g1"></div><div class="glow g2"></div><header><a class="brand"><b>K✦</b><span>KHMER INVOICE STUDIO<small>CREATE · SAVE · SHARE</small></span></a><span class="online">● OFFLINE READY</span></header><main><section class="hero"><div class="tag">✦ SIMPLE. BEAUTIFUL. PROFESSIONAL.</div><h1>Make every invoice<br><em>look unforgettable.</em></h1><p>A modern invoice maker for Khmer and English businesses.</p><div class="chips"><span>Khmer + English</span><span>Auto calculation</span><span>PNG export</span></div></section><div class="layout"><aside class="card settings"><div class="step">01 / CONFIGURE</div><h2>Create your invoice</h2><label>Invoice title<input id="type" value="វិក្កយបត្រ"></label><div class="two"><label>Date<input id="date" type="date"></label><label>Language<select id="lang"><option value="km">ខ្មែរ</option><option value="en">English</option></select></label></div><div class="two"><label>Accent color<input id="color" type="color" value="#3978f6"></label><label>Currency<select id="currency"><option>៛</option><option>$</option></select></label></div><label class="check"><input id="watermarkOn" type="checkbox"> Add watermark</label><label id="watermarkWrap" class="hide">Watermark text<input id="watermark" placeholder="VATHANA STORE"></label><button id="createBtn" class="primary">Create invoice <b>↗</b></button><small class="note">♢ Saved locally on your device</small></aside><section class="card preview"><div class="preview-head"><div><div class="step">02 / LIVE PREVIEW</div><h2>Your invoice</h2></div><div><button id="editBtn" class="sub">✎ Edit</button> <button id="saveBtn" class="sub">↧ Save</button></div></div><div class="paper-wrap"><article id="paper" class="paper"><div class="stripe"></div><div class="paperhead"><div><small>INVOICE / #0001</small><h2 id="paperTitle">វិក្កយបត្រ</h2><p><span id="dateLabel">កាលបរិច្ឆេទ</span> · <b id="paperDate"></b></p></div><div class="stamp">K✦</div></div><hr><div class="thead"><span id="thItem">បរិយាយ</span><span id="thQty">ចំនួន</span><span id="thPrice">តម្លៃ</span><span id="thTotal">សរុប</span></div><div id="items"></div><button id="addBtn" class="add">＋ <span id="addText">បន្ថែមទំនិញ</span></button><div class="sum"><span id="thanks">សូមអរគុណសម្រាប់ការគាំទ្រ!</span><div><small id="grandLabel">សរុបរួម</small><strong id="grandTotal">៛ 0</strong></div></div><div id="watermarkPreview" class="watermark hide"></div><footer>MADE WITH <b>KHMER INVOICE STUDIO</b></footer></article></div><div class="bottom"><button id="backBtn" class="sub">← Back</button><button id="downloadBtn" class="primary">⇩ Download PNG</button></div></section></div><footer class="sitefoot">Made with care ✦ Khmer Invoice Studio <span>© 2026 VATHANA</span></footer></main><div id="toast"></div><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<!-- Hallmark · macrostructure: tool-first (list → sheet → paper) · theme: paper-ledger · genre: modern-minimal
+     pre-emit critique: P4 H4 E4 S4 R5 V4 · slop test: pass -->
+<html lang="km">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>វិក័យប័ត្រ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232563eb'/%3E%3Cpath d='M18 12h28v40l-5-4-4.5 4-4.5-4-4.5 4-4.5-4-5 4z' fill='%23fff'/%3E%3Cpath d='M25 24h14M25 31h14M25 38h8' stroke='%232563eb' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="home">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16"/><path class="a" d="M18 12h28v40l-5-4-4.5 4-4.5-4-4.5 4-4.5-4-5 4z"/><path class="b" d="M25 24h14M25 31h14M25 38h8" fill="none" stroke-width="3.5" stroke-linecap="round"/></svg>
+    <div><h1>វិក័យប័ត្រ</h1><p>Invoice calculator</p></div>
+  </div>
+  <button class="btn wide" id="create">Create</button>
+  <section class="saved"><h2>Saved</h2><div id="list" style="display:grid;gap:10px"></div></section>
+</main>
+
+<div id="editor" hidden>
+  <div class="bar" id="bar">
+    <button id="back">Back</button>
+    <div class="grp"><button id="edit">Edit</button><button id="save">Save</button><button id="dl" class="dl">Download</button></div>
+  </div>
+  <div class="stage">
+    <div class="paper" id="paper"></div>
+    <button class="add" id="addrow">+ Row</button>
+  </div>
+</div>
+
+<div id="layer"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
