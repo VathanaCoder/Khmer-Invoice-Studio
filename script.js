@@ -21,7 +21,7 @@ const blankRow=()=>({name:'',qty:'1',touched:false,price:''});
 function today(){const d=new Date();return{d:d.getDate(),m:d.getMonth()+1,y:d.getFullYear()}}
 function newInv(){
   const c=store.get('vk-count',0)+1; store.set('vk-count',c);
-  return{id:'i'+Date.now(),type:'custom',date:today(),color:css('--sw-1'),lang:'km',wmOn:false,wm:'',
+  return{id:'i'+Date.now(),type:'Custom',date:today(),color:css('--sw-1'),lang:'km',wmOn:false,wm:'',
     company:'',contact:'',buyer:'',seller:'',no:String(c).padStart(6,'0'),cur:'៛',rows:Array.from({length:8},blankRow)};
 }
 const fmt=(n,c)=>c==='$'?'$'+n.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2}):'៛'+Math.round(n).toLocaleString('en');
@@ -34,7 +34,7 @@ function renderHome(){
   const all=store.get('vk-inv',[]),l=$('#list');
   if(!all.length){l.innerHTML='<div class="empty">No invoices yet. Tap Create to start one.</div>';return}
   l.innerHTML=all.map(i=>`<div class="item" style="--bar:${esc(i.color)}"><i></i>
-    <button class="open" data-id="${i.id}"><b>${esc(i.company||('No. '+i.no))}</b><small>${esc(i.no)} · ${dateStr(i.date)}</small></button>
+    <button class="open" data-id="${i.id}"><b>${esc(i.company||('No. '+i.no))}</b><small>${esc(i.type||'Custom')} · ${esc(i.no)} · ${dateStr(i.date)}</small></button>
     <span class="amt">${fmt(totalOf(i),i.cur)}</span><button class="del" data-del="${i.id}" aria-label="Delete">×</button></div>`).join('');
 }
 $('#list').addEventListener('click',e=>{
@@ -54,18 +54,18 @@ function confirmBox(msg,btns){
 }
 function openSetup(mode,d){
   const draft=structuredClone(d);
-  const sheet=()=>{
+  const sheet=(anim=true)=>{
     const sw=[1,2,3,4,5,6].map(n=>css('--sw-'+n));
-    layer.innerHTML=`<div class="scrim" id="sc"><div class="sheet" role="dialog">
+    layer.innerHTML=`<div class="scrim ${anim?'':'noanim'}" id="sc"><div class="sheet" role="dialog">
       <h3>${mode==='create'?'Create':'Edit'}</h3>
-      <div class="f"><span class="l">Type</span><span class="chip">Custom</span></div>
+      <div class="f"><label for="ty">Type</label><input class="fld" id="ty" value="${esc(draft.type)}" placeholder="Custom" maxlength="30" autocomplete="off"></div>
       <div class="f"><span class="l">Date</span><button class="fld" id="fd"><span>${dateStr(draft.date)}</span><span>▾</span></button></div>
       <div class="f"><span class="l">Color</span><div class="sws">
         ${sw.map(c=>`<button class="sw ${c.toLowerCase()===draft.color.toLowerCase()?'on':''}" style="--c:${c}" data-c="${c}" aria-label="${c}"></button>`).join('')}
         <label class="sw cu" aria-label="Custom color"><input type="color" id="cc" value="${draft.color}"></label></div></div>
       <div class="f"><span class="l">Language</span><div class="seg"><button data-l="km" class="${draft.lang==='km'?'on':''}">ខ្មែរ</button><button data-l="en" class="${draft.lang==='en'?'on':''}">English</button></div></div>
       <div class="f"><div class="row2"><span class="l" style="margin:0">Watermark</span><button class="sw-t ${draft.wmOn?'on':''}" id="wt" role="switch" aria-checked="${draft.wmOn}" aria-label="Watermark"></button></div>
-        ${draft.wmOn?`<input class="fld" id="wm" style="margin-top:10px" placeholder="Watermark word" value="${esc(draft.wm)}">`:''}</div>
+        <input class="fld" id="wm" style="margin-top:10px" placeholder="Watermark word" value="${esc(draft.wm)}" ${draft.wmOn?'':'hidden'}></div>
       ${mode==='edit'?`
       <div class="f"><label for="e1">${T[draft.lang].co}</label><input class="fld" id="e1" value="${esc(draft.company)}"></div>
       <div class="f"><label for="e2">Address / phone</label><input class="fld" id="e2" value="${esc(draft.contact)}"></div>
@@ -75,22 +75,31 @@ function openSetup(mode,d){
       <div class="acts"><button class="btn" id="ok">${mode==='create'?'Create':'Save changes'}</button><button class="btn ghost" id="no">Cancel</button></div></div></div>`;
     const sync=()=>{ // keep typed text when the sheet re-renders
       const g=id=>$('#'+id,layer);
+      if(g('ty'))draft.type=g('ty').value.trim()||'Custom';
       if(g('wm'))draft.wm=g('wm').value;
       if(mode==='edit'){draft.company=g('e1').value;draft.contact=g('e2').value;draft.buyer=g('e3').value;draft.seller=g('e4').value;draft.no=g('e5').value}
     };
     $('#sc').onclick=e=>{if(e.target.id==='sc')closeLayer()};
     $('#no').onclick=closeLayer;
-    $('#fd').onclick=()=>{sync();openDate(draft,sheet)};
-    layer.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sync();draft.color=b.dataset.c;sheet()});
-    $('#cc').onchange=e=>{sync();draft.color=e.target.value;sheet()};
-    layer.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{sync();draft.lang=b.dataset.l;sheet()});
-    $('#wt').onclick=()=>{sync();draft.wmOn=!draft.wmOn;sheet()};
+    $('#fd').onclick=()=>{sync();openDate(draft,()=>sheet(false))};
+    const mark=()=>layer.querySelectorAll('[data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===draft.color.toLowerCase()));
+    layer.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{draft.color=b.dataset.c;$('#cc').value=draft.color;mark()});
+    $('#cc').oninput=e=>{draft.color=e.target.value;mark()};
+    layer.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{
+      draft.lang=b.dataset.l;
+      layer.querySelectorAll('[data-l]').forEach(x=>x.classList.toggle('on',x===b));
+      if(mode==='edit')[['e1','co'],['e3','buyer'],['e4','seller'],['e5','num']].forEach(([id,k])=>{const l=$(`label[for="${id}"]`,layer);if(l)l.textContent=T[draft.lang][k]});
+    });
+    $('#wt').onclick=()=>{
+      draft.wmOn=!draft.wmOn;const t=$('#wt'),w=$('#wm');
+      t.classList.toggle('on',draft.wmOn);t.setAttribute('aria-checked',draft.wmOn);w.hidden=!draft.wmOn;if(draft.wmOn)w.focus();
+    };
     $('#ok').onclick=()=>{
       sync();
       if(draft.wmOn&&!draft.wm.trim())draft.wmOn=false;
       closeLayer();
       if(mode==='create'){inv=draft;dirty=true;openEditor()}
-      else{Object.assign(inv,{date:draft.date,color:draft.color,lang:draft.lang,wmOn:draft.wmOn,wm:draft.wm,company:draft.company,contact:draft.contact,buyer:draft.buyer,seller:draft.seller,no:draft.no});dirty=true;renderPaper()}
+      else{Object.assign(inv,{type:draft.type,date:draft.date,color:draft.color,lang:draft.lang,wmOn:draft.wmOn,wm:draft.wm,company:draft.company,contact:draft.contact,buyer:draft.buyer,seller:draft.seller,no:draft.no});dirty=true;renderPaper()}
     };
   };
   sheet();
@@ -153,6 +162,7 @@ function calc(i){
 function calcTotal(){const el=$('#tot');el.textContent=fmt(totalOf(inv),inv.cur)}
 const paper=$('#paper');
 paper.addEventListener('focusin',e=>{
+  lock=Date.now()+900;
   const el=e.target,row=el.closest('[data-i]');if(!row)return;
   const r=inv.rows[+row.dataset.i];
   if(el.classList.contains('qt')&&!r.touched){r.touched=true;r.qty='';el.value='';calc(+row.dataset.i);calcTotal()}
@@ -189,9 +199,10 @@ $('#back').onclick=()=>{
   confirmBox('Leave this invoice?',[['Exit and save',()=>{if(save())goHome()}],['Exit without save',goHome,'danger'],['Keep editing']]);
 };
 /* top bar: shows when scrolling up */
-let lastY=0;
+let lastY=0,lock=0;
 addEventListener('scroll',()=>{
   const y=scrollY,b=$('#bar');
+  if(Date.now()<lock||document.activeElement?.tagName==='INPUT'){lastY=y;return}
   b.classList.toggle('off',y>lastY&&y>70);lastY=y;
 },{passive:true});
 
